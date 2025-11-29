@@ -1,0 +1,2 @@
+source E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/bootloader/gdbinit/symbols
+source E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/bootloader/gdbinit/connect
