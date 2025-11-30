@@ -20,10 +20,6 @@ static const char *TAG = "AWS_TASK_BASED";
 // ==========================================
 // 1. CONFIGURATION
 // ==========================================
-// #define WIFI_SSID       "BEHDAD"
-// #define WIFI_PASS       "behdad1234"
-
-// #define AWS_IOT_ENDPOINT "a3goh03ys3u807-ats.iot.us-east-2.amazonaws.com"
 #define AWS_PUB_TOPIC   "esp32/pub"
 #define AWS_SUB_TOPIC   "esp32/sub"
 
@@ -265,6 +261,5 @@ void app_main(void) {
     mqtt_init();
 
     // Start the Business Logic Task
-    // Stack depth 4096 is generous to handle JSON operations
     xTaskCreate(publisher_task, "publisher_task", 4096, NULL, 5, NULL);
 }
