@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "ESP_AWS",
-    "project_version":    "a4d6f5c-dirty",
+    "project_version":    "69c8454-dirty",
     "project_path":       "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS",
     "idf_path":           "C:/Users/moham/esp/v5.5.1/esp-idf",
     "build_dir":          "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build",
@@ -580,7 +580,7 @@
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/main/libmain.a",
-            "sources": [ "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/main/main.c", "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/root_ca.pem.S", "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/device.crt.S", "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/private.key.S" ],
+            "sources": [ "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/main/main.c", "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/root_ca.pem.S", "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/device.crt.S", "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/private.key.S", "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/config.json.S" ],
             "include_dirs": []
         },
         "mbedtls": {
