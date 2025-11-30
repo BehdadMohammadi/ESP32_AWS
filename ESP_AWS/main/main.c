@@ -20,10 +20,10 @@ static const char *TAG = "AWS_TASK_BASED";
 // ==========================================
 // 1. CONFIGURATION
 // ==========================================
-#define WIFI_SSID       "BEHDAD"
-#define WIFI_PASS       "behdad1234"
+// #define WIFI_SSID       "BEHDAD"
+// #define WIFI_PASS       "behdad1234"
 
-#define AWS_IOT_ENDPOINT "a3goh03ys3u807-ats.iot.us-east-2.amazonaws.com"
+// #define AWS_IOT_ENDPOINT "a3goh03ys3u807-ats.iot.us-east-2.amazonaws.com"
 #define AWS_PUB_TOPIC   "esp32/pub"
 #define AWS_SUB_TOPIC   "esp32/sub"
 
@@ -43,9 +43,63 @@ extern const uint8_t device_crt_end[]      asm("_binary_device_crt_end");
 extern const uint8_t private_key_start[]   asm("_binary_private_key_start");
 extern const uint8_t private_key_end[]     asm("_binary_private_key_end");
 
+extern const uint8_t config_json_start[] asm("_binary_config_json_start");
+extern const uint8_t config_json_end[]   asm("_binary_config_json_end");
+
+char wifi_ssid[32] = {0};
+char wifi_pass[64] = {0};
+char aws_endpoint[128] = {0};
+
+
+
 // ==========================================
 // 2. EVENT HANDLERS (The "Infrastructure")
 // ==========================================
+
+esp_err_t load_embedded_config(void)
+{
+    ESP_LOGI(TAG, "Loading embedded config...");
+
+    // Calculate size of the file in memory
+    size_t config_len = config_json_end - config_json_start;
+
+    // Create a temporary buffer with space for a null terminator
+    char *json_buffer = malloc(config_len + 1);
+    if (json_buffer == NULL) {
+        ESP_LOGE(TAG, "Memory allocation failed");
+        return ESP_FAIL;
+    }
+
+    // Copy data from flash to RAM and null-terminate it
+    memcpy(json_buffer, config_json_start, config_len);
+    json_buffer[config_len] = '\0';
+
+    // Parse JSON
+    cJSON *root = cJSON_Parse(json_buffer);
+    if (root == NULL) {
+        ESP_LOGE(TAG, "Failed to parse JSON");
+        free(json_buffer);
+        return ESP_FAIL;
+    }
+
+    // Read keys
+    cJSON *ssid_item = cJSON_GetObjectItem(root, "wifi_ssid");
+    cJSON *pass_item = cJSON_GetObjectItem(root, "wifi_pass");
+    cJSON *url_item = cJSON_GetObjectItem(root, "aws_endpoint");
+
+    if (ssid_item && pass_item && url_item) {
+        strcpy(wifi_ssid, ssid_item->valuestring);
+        strcpy(wifi_pass, pass_item->valuestring);
+        strcpy(aws_endpoint, url_item->valuestring);
+        ESP_LOGI(TAG, "Config Loaded: SSID=%s", wifi_ssid);
+    } else {
+        ESP_LOGE(TAG, "JSON missing keys!");
+    }
+
+    cJSON_Delete(root);
+    free(json_buffer);
+    return ESP_OK;
+}
 
 /* Wi-Fi Handler: Only manages connection retry and setting the BIT */
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
@@ -138,10 +192,10 @@ void publisher_task(void *param)
 // 4. INITIALIZATION FUNCTIONS
 // ==========================================
 void wifi_init_sta(void) {
-
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
     esp_netif_create_default_wifi_sta();
+
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
@@ -150,21 +204,30 @@ void wifi_init_sta(void) {
 
     wifi_config_t wifi_config = {
         .sta = {
-            .ssid = WIFI_SSID,
-            .password = WIFI_PASS,
             .threshold.authmode = WIFI_AUTH_WPA2_PSK,
+            .pmf_cfg = {
+                .capable = true,
+                .required = false
+            },
         },
     };
+
+    strcpy((char *)wifi_config.sta.ssid, wifi_ssid);
+    strcpy((char *)wifi_config.sta.password, wifi_pass);
+
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
-
 }
 
 void mqtt_init(void) {
 
+
+    char uri_buffer[150]; 
+    sprintf(uri_buffer, "mqtts://%s:8883", aws_endpoint);
+
     const esp_mqtt_client_config_t mqtt_cfg = {
-        .broker.address.uri = "mqtts://" AWS_IOT_ENDPOINT ":8883",
+        .broker.address.uri = uri_buffer,
         .broker.verification.certificate = (const char *)root_ca_pem_start,
         .credentials.authentication = {
             .certificate = (const char *)device_crt_start,
@@ -174,7 +237,7 @@ void mqtt_init(void) {
     client = esp_mqtt_client_init(&mqtt_cfg);
     esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
     esp_mqtt_client_start(client);
-    
+
 }
 
 // ==========================================
@@ -193,6 +256,11 @@ void app_main(void) {
     s_status_event_group = xEventGroupCreate();
 
     // Start Drivers
+    
+    if (load_embedded_config() != ESP_OK) {
+        return; 
+    }
+
     wifi_init_sta();
     mqtt_init();
 

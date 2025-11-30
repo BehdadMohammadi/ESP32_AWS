@@ -8,6 +8,7 @@ if("${CONFIG}" STREQUAL "" OR "${CONFIG}" STREQUAL "")
   "bootloader\\bootloader.bin"
   "bootloader\\bootloader.elf"
   "bootloader\\bootloader.map"
+  "config.json.S"
   "config\\sdkconfig.cmake"
   "config\\sdkconfig.h"
   "device.crt.S"
