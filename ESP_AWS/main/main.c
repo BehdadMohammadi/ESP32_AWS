@@ -12,24 +12,28 @@
 #include "freertos/event_groups.h"
 #include "mqtt_client.h"
 #include "esp_log.h"
+#include "esp_timer.h"
+#include "cJSON.h" // Native JSON library in IDF
 
-static const char *TAG = "AWS_IDF_HARDCODED";
+static const char *TAG = "AWS_TASK_BASED";
 
 // ==========================================
-// 1. CONFIGURATION (HARD CODE YOUR CREDS)
+// 1. CONFIGURATION
 // ==========================================
 #define WIFI_SSID       "BEHDAD"
 #define WIFI_PASS       "behdad1234"
 
-#define AWS_IOT_ENDPOINT "a3goh03ys3u807-ats.iot.us-east-2.amazonaws.com" // e.g., xxxxx-ats.iot.us-east-1.amazonaws.com
-#define AWS_PUB_TOPIC    "esp32/pub"
-#define AWS_SUB_TOPIC    "esp32/sub"
+#define AWS_IOT_ENDPOINT "a3goh03ys3u807-ats.iot.us-east-2.amazonaws.com"
+#define AWS_PUB_TOPIC   "esp32/pub"
+#define AWS_SUB_TOPIC   "esp32/sub"
 
-// FreeRTOS Event Group to signal when we are connected
-static EventGroupHandle_t s_wifi_event_group;
+// Event Group Flags
+static EventGroupHandle_t s_status_event_group;
 #define WIFI_CONNECTED_BIT BIT0
-#define WIFI_FAIL_BIT      BIT1
-static int s_retry_num = 0;
+#define MQTT_CONNECTED_BIT BIT1
+
+// Global Client Handle
+esp_mqtt_client_handle_t client = NULL;
 
 // Import embedded certificates
 extern const uint8_t root_ca_pem_start[]   asm("_binary_root_ca_pem_start");
@@ -39,10 +43,11 @@ extern const uint8_t device_crt_end[]      asm("_binary_device_crt_end");
 extern const uint8_t private_key_start[]   asm("_binary_private_key_start");
 extern const uint8_t private_key_end[]     asm("_binary_private_key_end");
 
+// ==========================================
+// 2. EVENT HANDLERS (The "Infrastructure")
+// ==========================================
 
-// ==========================================
-// 2. WI-FI EVENT HANDLER
-// ==========================================
+/* Wi-Fi Handler: Only manages connection retry and setting the BIT */
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
 {
@@ -50,107 +55,114 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
         esp_wifi_connect();
     } 
     else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
-        ESP_LOGI(TAG, "Wi-Fi disconnected. Retrying...");
+        ESP_LOGW(TAG, "Wi-Fi Lost. Retrying...");
+        xEventGroupClearBits(s_status_event_group, WIFI_CONNECTED_BIT); // Turn light Red
         esp_wifi_connect();
-        s_retry_num++;
     } 
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
-        ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
-        s_retry_num = 0;
-        xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+        ESP_LOGI(TAG, "Wi-Fi Connected! IP:" IPSTR, IP2STR(&event->ip_info.ip));
+        xEventGroupSetBits(s_status_event_group, WIFI_CONNECTED_BIT); // Turn light Green
     }
 }
 
-// ==========================================
-// 3. WI-FI INIT FUNCTION
-// ==========================================
-void wifi_init_sta(void)
-{
-    s_wifi_event_group = xEventGroupCreate();
-
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-    esp_netif_create_default_wifi_sta();
-
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-
-    esp_event_handler_instance_t instance_any_id;
-    esp_event_handler_instance_t instance_got_ip;
-    
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
-                                                        ESP_EVENT_ANY_ID,
-                                                        &wifi_event_handler,
-                                                        NULL,
-                                                        &instance_any_id));
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
-                                                        IP_EVENT_STA_GOT_IP,
-                                                        &wifi_event_handler,
-                                                        NULL,
-                                                        &instance_got_ip));
-
-    wifi_config_t wifi_config = {
-        .sta = {
-            .ssid = WIFI_SSID,
-            .password = WIFI_PASS,
-            // Setting threshold ensures we don't connect to weak signals
-            .threshold.authmode = WIFI_AUTH_WPA2_PSK,
-        },
-    };
-    
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
-    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config) );
-    ESP_ERROR_CHECK(esp_wifi_start() );
-
-    ESP_LOGI(TAG, "wifi_init_sta finished.");
-
-    // Wait until we are actually connected
-    EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
-            WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
-            pdFALSE,
-            pdFALSE,
-            portMAX_DELAY);
-
-    if (bits & WIFI_CONNECTED_BIT) {
-        ESP_LOGI(TAG, "connected to ap SSID:%s", WIFI_SSID);
-    } else if (bits & WIFI_FAIL_BIT) {
-        ESP_LOGI(TAG, "Failed to connect to SSID:%s", WIFI_SSID);
-    } else {
-        ESP_LOGE(TAG, "UNEXPECTED EVENT");
-    }
-}
-
-// ==========================================
-// 4. MQTT LOGIC
-// ==========================================
+/* MQTT Handler: Only manages connection status bits and incoming data */
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
     esp_mqtt_event_handle_t event = event_data;
     switch ((esp_mqtt_event_id_t)event_id) {
     case MQTT_EVENT_CONNECTED:
-        ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
+        ESP_LOGI(TAG, "AWS MQTT Connected!");
+        xEventGroupSetBits(s_status_event_group, MQTT_CONNECTED_BIT); // Turn light Green
+        // We only SUBSCRIBE here. We do NOT publish here anymore.
         esp_mqtt_client_subscribe(event->client, AWS_SUB_TOPIC, 0);
-        esp_mqtt_client_publish(event->client, AWS_PUB_TOPIC, "{\"status\":\"Connected via Hardcoded WiFi\"}", 0, 1, 0);
         break;
+        
+    case MQTT_EVENT_DISCONNECTED:
+        ESP_LOGW(TAG, "AWS MQTT Disconnected");
+        xEventGroupClearBits(s_status_event_group, MQTT_CONNECTED_BIT); // Turn light Red
+        break;
+
     case MQTT_EVENT_DATA:
+        ESP_LOGI(TAG, "Received Data!");
         printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
         printf("DATA=%.*s\r\n", event->data_len, event->data);
         break;
+        
     case MQTT_EVENT_ERROR:
-        ESP_LOGE(TAG, "MQTT_EVENT_ERROR");
-        if (event->error_handle->error_type == MQTT_ERROR_TYPE_TCP_TRANSPORT) {
-             ESP_LOGE(TAG, "Last error code reported from esp-tls: 0x%x", event->error_handle->esp_tls_last_esp_err);
-             ESP_LOGE(TAG, "Last tls stack error number: 0x%x", event->error_handle->esp_tls_stack_err);
-             ESP_LOGE(TAG, "Last captured errno : %d (%s)",  event->error_handle->esp_transport_sock_errno,
-                                                             strerror(event->error_handle->esp_transport_sock_errno));
-        }
+        ESP_LOGE(TAG, "MQTT Error");
         break;
     default:
         break;
     }
 }
 
-static void mqtt_app_start(void) {
+// ==========================================
+// 3. THE APPLICATION TASK
+// ==========================================
+void publisher_task(void *param)
+{
+    while (1) {
+        // 1. WAIT: Pause here until BOTH Wi-Fi and MQTT are connected.
+        //    If connection drops, this line blocks automatically.
+        xEventGroupWaitBits(s_status_event_group,
+                                               WIFI_CONNECTED_BIT | MQTT_CONNECTED_BIT,
+                                               pdFALSE, // Do not clear bits on exit
+                                               pdTRUE,  // Wait for ALL bits (AND logic)
+                                               portMAX_DELAY);
+
+        // 2. PREPARE DATA: Create JSON payload
+        ESP_LOGI(TAG, "Generating Sensor Data...");
+        cJSON *root = cJSON_CreateObject();
+        cJSON_AddNumberToObject(root, "uptime", esp_timer_get_time() / 1000);
+        cJSON_AddStringToObject(root, "status", "Task Loop Running");
+        cJSON_AddNumberToObject(root, "random_val", rand() % 100);
+        
+        char *post_data = cJSON_PrintUnformatted(root);
+
+        // 3. PUBLISH: Send the data
+        if (client != NULL) {
+            int msg_id = esp_mqtt_client_publish(client, AWS_PUB_TOPIC, post_data, 0, 1, 0);
+            ESP_LOGI(TAG, "Published msg_id=%d, data=%s", msg_id, post_data);
+        }
+
+        // 4. CLEANUP
+        cJSON_Delete(root);
+        free(post_data);
+
+        // 5. BLOCKING DELAY (Sleep for 5 seconds)
+        vTaskDelay(pdMS_TO_TICKS(5000));
+    }
+}
+
+// ==========================================
+// 4. INITIALIZATION FUNCTIONS
+// ==========================================
+void wifi_init_sta(void) {
+
+    ESP_ERROR_CHECK(esp_netif_init());
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    esp_netif_create_default_wifi_sta();
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+
+    esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, NULL);
+    esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL, NULL);
+
+    wifi_config_t wifi_config = {
+        .sta = {
+            .ssid = WIFI_SSID,
+            .password = WIFI_PASS,
+            .threshold.authmode = WIFI_AUTH_WPA2_PSK,
+        },
+    };
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
+    ESP_ERROR_CHECK(esp_wifi_start());
+
+}
+
+void mqtt_init(void) {
+
     const esp_mqtt_client_config_t mqtt_cfg = {
         .broker.address.uri = "mqtts://" AWS_IOT_ENDPOINT ":8883",
         .broker.verification.certificate = (const char *)root_ca_pem_start,
@@ -159,18 +171,17 @@ static void mqtt_app_start(void) {
             .key = (const char *)private_key_start,
         }
     };
-
-    esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
+    client = esp_mqtt_client_init(&mqtt_cfg);
     esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
     esp_mqtt_client_start(client);
+    
 }
 
 // ==========================================
-// 5. MAIN ENTRY POINT
+// 5. MAIN
 // ==========================================
 void app_main(void) {
-    
-    // Initialize NVS
+    // Init NVS
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -178,9 +189,14 @@ void app_main(void) {
     }
     ESP_ERROR_CHECK(ret);
 
-    // 1. Start Wi-Fi and wait for connection
-    wifi_init_sta();
+    // Create the Event Group
+    s_status_event_group = xEventGroupCreate();
 
-    // 2. Once connected, Start MQTT
-    mqtt_app_start();
+    // Start Drivers
+    wifi_init_sta();
+    mqtt_init();
+
+    // Start the Business Logic Task
+    // Stack depth 4096 is generous to handle JSON operations
+    xTaskCreate(publisher_task, "publisher_task", 4096, NULL, 5, NULL);
 }

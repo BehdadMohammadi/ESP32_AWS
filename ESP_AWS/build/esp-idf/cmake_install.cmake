@@ -274,6 +274,11 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
+  include("E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/json/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
   include("E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/main/cmake_install.cmake")
 endif()
 

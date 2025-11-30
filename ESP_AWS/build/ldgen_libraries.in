@@ -86,5 +86,7 @@ $<TARGET_FILE:idf::esp-tls>
 $<TARGET_FILE:idf::tcp_transport>
 $<TARGET_FILE:idf::mqtt>
 $<TARGET_FILE:__idf_tcp_transport>
+$<TARGET_FILE:idf::json>
 $<TARGET_FILE:idf::main>
 $<TARGET_FILE:__idf_mqtt>
+$<TARGET_FILE:__idf_json>

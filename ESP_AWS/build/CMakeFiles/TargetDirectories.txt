@@ -453,6 +453,13 @@ E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/mqtt/CMakeFiles/list_insta
 E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/mqtt/CMakeFiles/install.dir
 E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/mqtt/CMakeFiles/install/local.dir
 E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/mqtt/CMakeFiles/install/strip.dir
+E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/json/CMakeFiles/__idf_json.dir
+E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/json/CMakeFiles/edit_cache.dir
+E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/json/CMakeFiles/rebuild_cache.dir
+E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/json/CMakeFiles/list_install_components.dir
+E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/json/CMakeFiles/install.dir
+E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/json/CMakeFiles/install/local.dir
+E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/json/CMakeFiles/install/strip.dir
 E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/main/CMakeFiles/__idf_main.dir
 E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/main/CMakeFiles/edit_cache.dir
 E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/main/CMakeFiles/rebuild_cache.dir

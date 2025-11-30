@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "ESP_AWS",
-    "project_version":    "6e78307-dirty",
+    "project_version":    "a4d6f5c-dirty",
     "project_path":       "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS",
     "idf_path":           "C:/Users/moham/esp/v5.5.1/esp-idf",
     "build_dir":          "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build",
@@ -25,8 +25,8 @@
         "COMPONENT_KCONFIGS_PROJBUILD" : "C:/Users/moham/esp/v5.5.1/esp-idf/components/bootloader/Kconfig.projbuild;C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_app_format/Kconfig.projbuild;C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_rom/Kconfig.projbuild;C:/Users/moham/esp/v5.5.1/esp-idf/components/esptool_py/Kconfig.projbuild;C:/Users/moham/esp/v5.5.1/esp-idf/components/partition_table/Kconfig.projbuild"
     },
     "common_component_reqs": [ "cxx", "newlib", "freertos", "esp_hw_support", "heap", "log", "soc", "hal", "esp_rom", "esp_common", "esp_system", "xtensa" ],
-    "build_components" : [ "app_update", "bootloader", "bootloader_support", "cxx", "efuse", "esp-tls", "esp_app_format", "esp_bootloader_format", "esp_coex", "esp_common", "esp_driver_gpio", "esp_driver_uart", "esp_driver_usb_serial_jtag", "esp_event", "esp_hw_support", "esp_mm", "esp_netif", "esp_netif_stack", "esp_partition", "esp_phy", "esp_pm", "esp_ringbuf", "esp_rom", "esp_security", "esp_system", "esp_timer", "esp_vfs_console", "esp_wifi", "esptool_py", "freertos", "hal", "heap", "http_parser", "log", "lwip", "main", "mbedtls", "mqtt", "newlib", "nvs_flash", "partition_table", "pthread", "soc", "spi_flash", "tcp_transport", "vfs", "wpa_supplicant", "xtensa", "" ],
-    "build_component_paths" : [ "C:/Users/moham/esp/v5.5.1/esp-idf/components/app_update", "C:/Users/moham/esp/v5.5.1/esp-idf/components/bootloader", "C:/Users/moham/esp/v5.5.1/esp-idf/components/bootloader_support", "C:/Users/moham/esp/v5.5.1/esp-idf/components/cxx", "C:/Users/moham/esp/v5.5.1/esp-idf/components/efuse", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp-tls", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_app_format", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_bootloader_format", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_coex", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_common", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_driver_gpio", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_driver_uart", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_driver_usb_serial_jtag", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_event", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_hw_support", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_mm", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_netif", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_netif_stack", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_partition", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_phy", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_pm", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_ringbuf", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_rom", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_security", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_system", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_timer", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_vfs_console", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_wifi", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esptool_py", "C:/Users/moham/esp/v5.5.1/esp-idf/components/freertos", "C:/Users/moham/esp/v5.5.1/esp-idf/components/hal", "C:/Users/moham/esp/v5.5.1/esp-idf/components/heap", "C:/Users/moham/esp/v5.5.1/esp-idf/components/http_parser", "C:/Users/moham/esp/v5.5.1/esp-idf/components/log", "C:/Users/moham/esp/v5.5.1/esp-idf/components/lwip", "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/main", "C:/Users/moham/esp/v5.5.1/esp-idf/components/mbedtls", "C:/Users/moham/esp/v5.5.1/esp-idf/components/mqtt", "C:/Users/moham/esp/v5.5.1/esp-idf/components/newlib", "C:/Users/moham/esp/v5.5.1/esp-idf/components/nvs_flash", "C:/Users/moham/esp/v5.5.1/esp-idf/components/partition_table", "C:/Users/moham/esp/v5.5.1/esp-idf/components/pthread", "C:/Users/moham/esp/v5.5.1/esp-idf/components/soc", "C:/Users/moham/esp/v5.5.1/esp-idf/components/spi_flash", "C:/Users/moham/esp/v5.5.1/esp-idf/components/tcp_transport", "C:/Users/moham/esp/v5.5.1/esp-idf/components/vfs", "C:/Users/moham/esp/v5.5.1/esp-idf/components/wpa_supplicant", "C:/Users/moham/esp/v5.5.1/esp-idf/components/xtensa", "" ],
+    "build_components" : [ "app_update", "bootloader", "bootloader_support", "cxx", "efuse", "esp-tls", "esp_app_format", "esp_bootloader_format", "esp_coex", "esp_common", "esp_driver_gpio", "esp_driver_uart", "esp_driver_usb_serial_jtag", "esp_event", "esp_hw_support", "esp_mm", "esp_netif", "esp_netif_stack", "esp_partition", "esp_phy", "esp_pm", "esp_ringbuf", "esp_rom", "esp_security", "esp_system", "esp_timer", "esp_vfs_console", "esp_wifi", "esptool_py", "freertos", "hal", "heap", "http_parser", "json", "log", "lwip", "main", "mbedtls", "mqtt", "newlib", "nvs_flash", "partition_table", "pthread", "soc", "spi_flash", "tcp_transport", "vfs", "wpa_supplicant", "xtensa", "" ],
+    "build_component_paths" : [ "C:/Users/moham/esp/v5.5.1/esp-idf/components/app_update", "C:/Users/moham/esp/v5.5.1/esp-idf/components/bootloader", "C:/Users/moham/esp/v5.5.1/esp-idf/components/bootloader_support", "C:/Users/moham/esp/v5.5.1/esp-idf/components/cxx", "C:/Users/moham/esp/v5.5.1/esp-idf/components/efuse", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp-tls", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_app_format", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_bootloader_format", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_coex", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_common", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_driver_gpio", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_driver_uart", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_driver_usb_serial_jtag", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_event", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_hw_support", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_mm", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_netif", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_netif_stack", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_partition", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_phy", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_pm", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_ringbuf", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_rom", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_security", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_system", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_timer", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_vfs_console", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esp_wifi", "C:/Users/moham/esp/v5.5.1/esp-idf/components/esptool_py", "C:/Users/moham/esp/v5.5.1/esp-idf/components/freertos", "C:/Users/moham/esp/v5.5.1/esp-idf/components/hal", "C:/Users/moham/esp/v5.5.1/esp-idf/components/heap", "C:/Users/moham/esp/v5.5.1/esp-idf/components/http_parser", "C:/Users/moham/esp/v5.5.1/esp-idf/components/json", "C:/Users/moham/esp/v5.5.1/esp-idf/components/log", "C:/Users/moham/esp/v5.5.1/esp-idf/components/lwip", "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/main", "C:/Users/moham/esp/v5.5.1/esp-idf/components/mbedtls", "C:/Users/moham/esp/v5.5.1/esp-idf/components/mqtt", "C:/Users/moham/esp/v5.5.1/esp-idf/components/newlib", "C:/Users/moham/esp/v5.5.1/esp-idf/components/nvs_flash", "C:/Users/moham/esp/v5.5.1/esp-idf/components/partition_table", "C:/Users/moham/esp/v5.5.1/esp-idf/components/pthread", "C:/Users/moham/esp/v5.5.1/esp-idf/components/soc", "C:/Users/moham/esp/v5.5.1/esp-idf/components/spi_flash", "C:/Users/moham/esp/v5.5.1/esp-idf/components/tcp_transport", "C:/Users/moham/esp/v5.5.1/esp-idf/components/vfs", "C:/Users/moham/esp/v5.5.1/esp-idf/components/wpa_supplicant", "C:/Users/moham/esp/v5.5.1/esp-idf/components/xtensa", "" ],
     "build_component_info" : {
         "app_update": {
             "alias": "idf::app_update",
@@ -523,6 +523,21 @@
             "sources": [ "C:/Users/moham/esp/v5.5.1/esp-idf/components/http_parser/http_parser.c" ],
             "include_dirs": [ "." ]
         },
+        "json": {
+            "alias": "idf::json",
+            "target": "___idf_json",
+            "prefix": "idf",
+            "dir": "C:/Users/moham/esp/v5.5.1/esp-idf/components/json",
+            "type": "LIBRARY",
+            "lib": "__idf_json",
+            "reqs": [],
+            "priv_reqs": [],
+            "managed_reqs": [],
+            "managed_priv_reqs": [],
+            "file": "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/build/esp-idf/json/libjson.a",
+            "sources": [ "C:/Users/moham/esp/v5.5.1/esp-idf/components/json/cJSON/cJSON.c", "C:/Users/moham/esp/v5.5.1/esp-idf/components/json/cJSON/cJSON_Utils.c" ],
+            "include_dirs": [ "cJSON" ]
+        },
         "log": {
             "alias": "idf::log",
             "target": "___idf_log",
@@ -560,7 +575,7 @@
             "dir": "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/main",
             "type": "LIBRARY",
             "lib": "__idf_main",
-            "reqs": [ "esp_wifi", "nvs_flash", "esp_event", "esp_netif", "mqtt" ],
+            "reqs": [ "esp_wifi", "nvs_flash", "esp_event", "esp_netif", "mqtt", "json" ],
             "priv_reqs": [ "spi_flash" ],
             "managed_reqs": [],
             "managed_priv_reqs": [],
@@ -2052,7 +2067,7 @@
             "prefix": "idf",
             "dir": "E:/projects/ESP32/AWS/ESP32_AWS/ESP_AWS/main",
             "lib": "__idf_main",
-            "reqs": [ "esp_wifi", "nvs_flash", "esp_event", "esp_netif", "mqtt" ],
+            "reqs": [ "esp_wifi", "nvs_flash", "esp_event", "esp_netif", "mqtt", "json" ],
             "priv_reqs": [ "spi_flash" ],
             "managed_reqs": [],
             "managed_priv_reqs": [],
